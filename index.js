@@ -27,30 +27,37 @@ async function run() {
         const reviewCollection = database.collection('review');
 
 
-        //post api for services insert
-        app.post('/services', async (req, res) => {
+        //post api for services insert me
+        app.post('/review', async (req, res) => {
             const service = req.body;
-            const result = await serviceCollection.insertOne(service);
+            const result = await reviewCollection.insertOne(service);
             console.log(result);
             res.json(result)
         });
 
 
-        // GET API all service for show data
+        // GET API all service for show data me
         app.get('/service', async (req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
             res.send(services);
         });
+        // GET API all service for show data me
+        app.get('/review', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const services = await cursor.toArray();
+            res.json(services);
+        });
 
 
-        // GET Single Service id
+        // GET Single Service id me
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const service = await serviceCollection.findOne(query);
             res.json(service);
         })
+
 
 
         // Add Orders API
