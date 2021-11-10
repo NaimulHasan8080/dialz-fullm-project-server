@@ -25,6 +25,7 @@ async function run() {
         const database = client.db('swiss-eagle');
         const serviceCollection = database.collection('service');
         const reviewCollection = database.collection('review');
+        const ordersCollection = database.collection('orders')
 
 
         //post api for services insert me
@@ -61,7 +62,7 @@ async function run() {
 
 
         // Add Orders API
-        app.post('/myorders', async (req, res) => {
+        app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.json(result);
