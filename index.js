@@ -26,6 +26,7 @@ async function run() {
         const serviceCollection = database.collection('service');
         const reviewCollection = database.collection('review');
         const ordersCollection = database.collection('orders')
+        const usersCollection = database.collection('users')
 
 
         //post api for services insert me
@@ -61,10 +62,16 @@ async function run() {
 
 
 
-        // Add Orders API
+        // Add Orders API me
         app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
+            res.json(result);
+        })
+        // Add users API me
+        app.post('/users', async (req, res) => {
+            const order = req.body;
+            const result = await usersCollection.insertOne(order);
             res.json(result);
         })
 
