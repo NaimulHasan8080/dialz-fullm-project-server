@@ -51,6 +51,13 @@ async function run() {
             res.json(services);
         });
 
+        // GET API all orders  for show data me
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const services = await cursor.toArray();
+            res.json(services);
+        });
+
 
         // GET Single Service id me
         app.get('/service/:id', async (req, res) => {
@@ -59,7 +66,6 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.json(service);
         })
-
 
 
         // Add Orders API me
@@ -75,15 +81,24 @@ async function run() {
             res.json(result);
         })
 
-        // show my orders
-        app.get('/orders', async (req, res) => {
-            const cursor = ordersCollection.find({});
-            const product = await cursor.toArray();
-            res.send(product);
+        // show only users orders to ui
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const result = await ordersCollection.find(filter).toArray();
+            res.json(result)
         });
 
+        // cancel an order cancel by customer from my order
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            // console.log('deleting user with id ', result);
+            res.json(result);
+        })
 
-        // update status
+        // update order status status
         app.put('/update/:id', async (req, res) => {
             const id = req.params.id;
             const updatedOrder = req.body;
@@ -99,14 +114,7 @@ async function run() {
             res.json(result)
         })
 
-        // cancel an order
-        app.delete('/orders/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await ordersCollection.deleteOne(query);
-            console.log('deleting user with id ', result);
-            res.json(result);
-        })
+
 
         // dynamic api for update products
         app.get('/orders/:id', async (req, res) => {
