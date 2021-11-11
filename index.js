@@ -58,6 +58,13 @@ async function run() {
             res.json(services);
         });
 
+        // GET API all users  for show data me
+        // app.get('/users', async (req, res) => {
+        //     const cursor = usersCollection.find({});
+        //     const services = await cursor.toArray();
+        //     res.json(services);
+        // });
+
 
         // GET Single Service id me
         app.get('/service/:id', async (req, res) => {
@@ -67,6 +74,18 @@ async function run() {
             res.json(service);
         })
 
+
+        //check user he/she admin or not
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin })
+        })
 
         // Add Orders API me
         app.post('/orders', async (req, res) => {
@@ -79,6 +98,27 @@ async function run() {
             const order = req.body;
             const result = await usersCollection.insertOne(order);
             res.json(result);
+        })
+
+
+        //collect google login in data
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result)
+        })
+
+        //create admin and check already admin or not
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            console.log(result);
+            res.json(result)
         })
 
         // show only users orders to ui
@@ -121,7 +161,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const order = await ordersCollection.findOne(query);
-            console.log('load user with id: ', id);
+            // console.log('load user with id: ', id);
             res.send(order);
         })
 
