@@ -58,13 +58,6 @@ async function run() {
             res.json(services);
         });
 
-        // GET API all users  for show data me
-        // app.get('/users', async (req, res) => {
-        //     const cursor = usersCollection.find({});
-        //     const services = await cursor.toArray();
-        //     res.json(services);
-        // });
-
 
         // GET Single Service id me
         app.get('/service/:id', async (req, res) => {
@@ -97,6 +90,13 @@ async function run() {
         app.post('/users', async (req, res) => {
             const order = req.body;
             const result = await usersCollection.insertOne(order);
+            res.json(result);
+        })
+
+        // Add users API me
+        app.post('/products', async (req, res) => {
+            const order = req.body;
+            const result = await serviceCollection.insertOne(order);
             res.json(result);
         })
 
@@ -138,6 +138,15 @@ async function run() {
             res.json(result);
         })
 
+        // delete product to admin from my manage order
+        app.delete('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await serviceCollection.deleteOne(query);
+            // console.log('deleting user with id ', result);
+            res.json(result);
+        })
+
         // update order status status
         app.put('/update/:id', async (req, res) => {
             const id = req.params.id;
@@ -175,7 +184,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('running swiss eagle server')
+    res.send('running Dialz server')
 })
 app.listen(port, () => {
     console.log('listening on port', port);
