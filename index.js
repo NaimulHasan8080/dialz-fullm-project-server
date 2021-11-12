@@ -27,13 +27,13 @@ async function run() {
         const reviewCollection = database.collection('review');
         const ordersCollection = database.collection('orders')
         const usersCollection = database.collection('users')
+        const subscriberCollection = database.collection('subscriber')
 
 
         //post api for services insert me
         app.post('/review', async (req, res) => {
             const service = req.body;
             const result = await reviewCollection.insertOne(service);
-            console.log(result);
             res.json(result)
         });
 
@@ -56,6 +56,13 @@ async function run() {
             const cursor = ordersCollection.find({});
             const services = await cursor.toArray();
             res.json(services);
+        });
+
+        // GET API all subscriber  for show data me
+        app.get('/subscriber', async (req, res) => {
+            const cursor = subscriberCollection.find({});
+            const subscriber = await cursor.toArray();
+            res.json(subscriber);
         });
 
 
@@ -97,6 +104,13 @@ async function run() {
         app.post('/products', async (req, res) => {
             const order = req.body;
             const result = await serviceCollection.insertOne(order);
+            res.json(result);
+        })
+
+        // Add subscriber API me
+        app.post('/subscriber', async (req, res) => {
+            const order = req.body;
+            const result = await subscriberCollection.insertOne(order);
             res.json(result);
         })
 
