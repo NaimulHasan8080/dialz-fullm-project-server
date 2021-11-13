@@ -78,7 +78,7 @@ async function run() {
         //check user he/she admin or not
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email };
+            const query = { email: email };
             const user = await usersCollection.findOne(query);
             let isAdmin = false;
             if (user?.role === 'admin') {
@@ -203,4 +203,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log('listening on port', port);
 });
-
