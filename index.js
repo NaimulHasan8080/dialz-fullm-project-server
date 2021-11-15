@@ -58,6 +58,15 @@ async function run() {
             res.json(services);
         });
 
+        // GET API all orders  for show data me
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await ordersCollection.findOne(query);
+            // const services = await cursor.toArray();
+            res.json(result);
+        });
+
         // GET API all subscriber  for show data me
         app.get('/subscriber', async (req, res) => {
             const cursor = subscriberCollection.find({});
