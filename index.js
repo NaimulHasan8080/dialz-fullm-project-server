@@ -5,6 +5,9 @@ const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 require('dotenv').config();
 
+//stripe for payment
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -197,7 +200,32 @@ async function run() {
             res.send(order);
         })
 
+        //payment of card
+        app.post("/create-payment-intent", async (req, res) => {
+            const paymentInfo = req.body;
+            const amount = paymentInfo.price * 100;
+            // const paymentIntent = await stripe.paymentIntents.create
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                payment_method_types: ['card']
+            });
+            res.json({
+                clientSecret: paymentIntent.client_secret,
+            });
+        })
 
+        //update orders after payment complete 
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: { payment: payment }
+            };
+            const result = await ordersCollection.updateOne(filter, updateDoc);
+            res.json(result)
+        })
     }
     finally {
 
