@@ -1,7 +1,7 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
-
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -14,7 +14,7 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
-
+app.use(fileUpload());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nsqce.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -27,6 +27,7 @@ async function run() {
         console.log("connect to database");
         const database = client.db('swiss-eagle');
         const serviceCollection = database.collection('service');
+        const memberCollection = database.collection('member');
         const reviewCollection = database.collection('review');
         const ordersCollection = database.collection('orders')
         const usersCollection = database.collection('users')
@@ -115,9 +116,32 @@ async function run() {
         // Add users API me
         app.post('/products', async (req, res) => {
             const order = req.body;
+            // console.log('picture', order.picture);
             const result = await serviceCollection.insertOne(order);
             res.json(result);
         })
+
+        //collect member from client
+        app.post('/member', async (req, res) => {
+            const name = req.body.name;
+            const price = req.body.price;
+            const description = req.body.description;
+            const image = req.files.image;
+            const imageData = image.data;
+            const encodedPic = imageData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const products = {
+                name,
+                price,
+                description,
+                image: imageBuffer
+            };
+            const result = await memberCollection.insertOne(products);
+            // console.log('body', req.body);
+            // console.log('files', req.files);
+            res.json(result)
+        })
+
 
         // Add subscriber API me
         app.post('/subscriber', async (req, res) => {
